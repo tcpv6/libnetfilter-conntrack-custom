@@ -1,8 +1,10 @@
 /*
- * (C) 2006-2007 by Pablo Neira Ayuso <pablo@netfilter.org>
+ * (C) 2005-2011 by Pablo Neira Ayuso <pablo@netfilter.org>
  *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  */
 
 #include <stdlib.h>
@@ -94,6 +96,40 @@ struct nf_expect *nfexp_clone(const struct nf_expect *exp)
 	memcpy(clone, exp, sizeof(*exp));
 
 	return clone;
+}
+
+/**
+ * nfexp_cmp - compare two expectation objects
+ * \param exp1 pointer to a valid expectation object
+ * \param exp2 pointer to a valid expectation object
+ * \param flags flags
+ *
+ * This function only compare attribute set in both objects, by default
+ * the comparison is not strict, ie. if a certain attribute is not set in one
+ * of the objects, then such attribute is not used in the comparison.
+ * If you want more strict comparisons, you can use the appropriate flags
+ * to modify this behaviour (see NFCT_CMP_STRICT and NFCT_CMP_MASK).
+ *
+ * The available flags are:
+ *      - NFCT_CMP_STRICT: the compared objects must have the same attributes
+ *      and the same values, otherwise it returns that the objects are
+ *      different.
+ *      - NFCT_CMP_MASK: the first object is used as mask, this means that
+ *      if an attribute is present in exp1 but not in exp2, this function
+ *      returns that the objects are different.
+ *
+ * Other existing flags that are used by nfct_cmp() are ignored.
+ *
+ * If both conntrack object are equal, this function returns 1, otherwise
+ * 0 is returned.
+ */
+int nfexp_cmp(const struct nf_expect *exp1, const struct nf_expect *exp2,
+	      unsigned int flags)
+{
+        assert(exp1 != NULL);
+        assert(exp2 != NULL);
+
+        return __cmp_expect(exp1, exp2, flags);
 }
 
 /**
@@ -643,6 +679,38 @@ int nfexp_query(struct nfct_handle *h,
 		return -1;
 
 	return nfnl_query(h->nfnlh, &u.req.nlh);
+}
+
+/**
+ * nfexp_send - send a query to ctnetlink
+ * \param h library handler
+ * \param qt query type
+ * \param data data required to send the query
+ *
+ * Like nfexp_query but we do not wait for the reply from ctnetlink.
+ * You can use nfexp_send() and nfexp_catch() to emulate nfexp_query().
+ * This is particularly useful when the socket is non-blocking.
+ *
+ * On error, -1 is returned and errno is explicitely set. On success, 0
+ * is returned.
+ */
+int nfexp_send(struct nfct_handle *h,
+	       const enum nf_conntrack_query qt,
+	       const void *data)
+{
+	size_t size = 4096;	/* enough for now */
+	union {
+		char buffer[size];
+		struct nfnlhdr req;
+	} u;
+
+	assert(h != NULL);
+	assert(data != NULL);
+
+	if (__build_query_exp(h->nfnlssh_exp, qt, data, &u.req, size) == -1)
+		return -1;
+
+	return nfnl_send(h->nfnlh, &u.req.nlh);
 }
 
 /**

@@ -1,19 +1,30 @@
 /*
- * (C) 2006-2007 by Pablo Neira Ayuso <pablo@netfilter.org>
+ * (C) 2005-2011 by Pablo Neira Ayuso <pablo@netfilter.org>
  *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  */
 
 #include "internal/internal.h"
+
+static int
+__snprintf_expect_timeout(char *buf, unsigned int len,
+			  const struct nf_expect *exp)
+{
+	if (test_bit(ATTR_EXP_TIMEOUT, exp->set))
+		return snprintf(buf, len, "%u ", exp->timeout);
+
+	return 0;
+}
 
 static int __snprintf_expect_proto(char *buf, 
 				   unsigned int len,
 				   const struct nf_expect *exp)
 {
-	 return(snprintf(buf, len, "%u proto=%d ", 
-	 		 exp->timeout, 
-			 exp->expected.tuple[__DIR_ORIG].protonum));
+	 return(snprintf(buf, len, "proto=%d ",
+			 exp->expected.orig.protonum));
 }
 
 int __snprintf_expect_default(char *buf, 
@@ -41,13 +52,33 @@ int __snprintf_expect_default(char *buf,
 
 	BUFFER_SIZE(ret, size, len, offset);
 
+	ret = __snprintf_expect_timeout(buf+offset, len, exp);
+	BUFFER_SIZE(ret, size, len, offset);
+
 	ret = __snprintf_expect_proto(buf+offset, len, exp);
 	BUFFER_SIZE(ret, size, len, offset);
 
-	ret = __snprintf_address(buf+offset, len, &exp->expected.tuple[__DIR_ORIG]);
+	ret = __snprintf_address(buf+offset, len, &exp->expected.orig,
+				 "src", "dst");
 	BUFFER_SIZE(ret, size, len, offset);
 
-	ret = __snprintf_proto(buf+offset, len, &exp->expected.tuple[__DIR_ORIG]);
+	ret = __snprintf_proto(buf+offset, len, &exp->expected.orig);
+	BUFFER_SIZE(ret, size, len, offset);
+
+	ret = __snprintf_address(buf+offset, len, &exp->mask.orig,
+				 "mask-src", "mask-dst");
+	BUFFER_SIZE(ret, size, len, offset);
+
+	ret = __snprintf_proto(buf+offset, len,
+				&exp->mask.orig);
+	BUFFER_SIZE(ret, size, len, offset);
+
+	ret = __snprintf_address(buf+offset, len, &exp->master.orig,
+				 "master-src", "master-dst");
+	BUFFER_SIZE(ret, size, len, offset);
+
+	ret = __snprintf_proto(buf+offset, len,
+				&exp->master.orig);
 	BUFFER_SIZE(ret, size, len, offset);
 
 	if (test_bit(ATTR_EXP_ZONE, exp->set)) {
@@ -67,6 +98,11 @@ int __snprintf_expect_default(char *buf,
 	}
 	if (exp->flags & NF_CT_EXPECT_USERSPACE) {
 		ret = snprintf(buf+offset, len, "%sUSERSPACE", delim);
+		BUFFER_SIZE(ret, size, len, offset);
+	}
+
+	if (test_bit(ATTR_EXP_HELPER_NAME, exp->set)) {
+		ret = snprintf(buf+offset, len, "helper=%s", exp->helper_name);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 

@@ -1,8 +1,10 @@
 /*
- * (C) 2006-2007 by Pablo Neira Ayuso <pablo@netfilter.org>
+ * (C) 2005-2011 by Pablo Neira Ayuso <pablo@netfilter.org>
  *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  */
 
 #include "internal/internal.h"
@@ -31,24 +33,36 @@ void __parse_expect(const struct nlmsghdr *nlh,
 	struct nfgenmsg *nfhdr = NLMSG_DATA(nlh);
 
 	/* XXX: this is ugly, clean it up, please */
-	exp->expected.tuple[__DIR_ORIG].l3protonum = nfhdr->nfgen_family;
+	exp->expected.orig.l3protonum = nfhdr->nfgen_family;
 	set_bit(ATTR_ORIG_L3PROTO, exp->expected.set);
 
-	exp->mask.tuple[__DIR_REPL].l3protonum = nfhdr->nfgen_family;
+	exp->mask.orig.l3protonum = nfhdr->nfgen_family;
 	set_bit(ATTR_ORIG_L3PROTO, exp->mask.set);
 
-	if (cda[CTA_EXPECT_TUPLE-1])
+	exp->master.orig.l3protonum = nfhdr->nfgen_family;
+	set_bit(ATTR_ORIG_L3PROTO, exp->master.set);
+
+	if (cda[CTA_EXPECT_MASTER-1]) {
+		__parse_tuple(cda[CTA_EXPECT_MASTER-1], 
+			      &exp->master.orig,
+			      __DIR_ORIG,
+			      exp->master.set);
+		set_bit(ATTR_EXP_MASTER, exp->set);
+	}
+	if (cda[CTA_EXPECT_TUPLE-1]) {
 		__parse_tuple(cda[CTA_EXPECT_TUPLE-1], 
-			      &exp->expected.tuple[__DIR_ORIG],
+			      &exp->expected.orig,
 			      __DIR_ORIG,
-			      exp->set);
-
-	if (cda[CTA_EXPECT_MASK-1])
+			      exp->expected.set);
+		set_bit(ATTR_EXP_EXPECTED, exp->set);
+	}
+	if (cda[CTA_EXPECT_MASK-1]) {
 		__parse_tuple(cda[CTA_EXPECT_MASK-1], 
-			      &exp->mask.tuple[__DIR_ORIG], 
+			      &exp->mask.orig,
 			      __DIR_ORIG,
-			      exp->set);
-
+			      exp->mask.set);
+		set_bit(ATTR_EXP_MASK, exp->set);
+	}
 	if (cda[CTA_EXPECT_TIMEOUT-1]) {
 		exp->timeout = 
 		      ntohl(*(u_int32_t *)NFA_DATA(cda[CTA_EXPECT_TIMEOUT-1]));
@@ -64,5 +78,10 @@ void __parse_expect(const struct nlmsghdr *nlh,
 		exp->flags =
 		      ntohl(*(u_int32_t *)NFA_DATA(cda[CTA_EXPECT_FLAGS-1]));
 		set_bit(ATTR_EXP_FLAGS, exp->set);
+	}
+	if (cda[CTA_EXPECT_HELP_NAME-1]) {
+		strncpy(exp->helper_name, NFA_DATA(cda[CTA_EXPECT_HELP_NAME-1]),
+			NFA_PAYLOAD(cda[CTA_EXPECT_HELP_NAME-1]));
+		set_bit(ATTR_EXP_HELPER_NAME, exp->set);
 	}
 }

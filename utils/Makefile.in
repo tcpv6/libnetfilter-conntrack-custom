@@ -59,79 +59,92 @@ CONFIG_CLEAN_VPATH_FILES =
 am_conntrack_create_OBJECTS = conntrack_create.$(OBJEXT)
 conntrack_create_OBJECTS = $(am_conntrack_create_OBJECTS)
 conntrack_create_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-conntrack_create_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(conntrack_create_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_lt = $(am__v_lt_$(V))
+am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
+am__v_lt_0 = --silent
+conntrack_create_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(conntrack_create_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_conntrack_create_nat_OBJECTS = conntrack_create_nat.$(OBJEXT)
 conntrack_create_nat_OBJECTS = $(am_conntrack_create_nat_OBJECTS)
 conntrack_create_nat_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-conntrack_create_nat_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(conntrack_create_nat_LDFLAGS) $(LDFLAGS) -o $@
+conntrack_create_nat_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(conntrack_create_nat_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am_conntrack_delete_OBJECTS = conntrack_delete.$(OBJEXT)
 conntrack_delete_OBJECTS = $(am_conntrack_delete_OBJECTS)
 conntrack_delete_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-conntrack_delete_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(conntrack_delete_LDFLAGS) $(LDFLAGS) -o $@
+conntrack_delete_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(conntrack_delete_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_conntrack_dump_OBJECTS = conntrack_dump.$(OBJEXT)
 conntrack_dump_OBJECTS = $(am_conntrack_dump_OBJECTS)
 conntrack_dump_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-conntrack_dump_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(conntrack_dump_LDFLAGS) $(LDFLAGS) -o $@
+conntrack_dump_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(conntrack_dump_LDFLAGS) $(LDFLAGS) -o \
+	$@
 am_conntrack_events_OBJECTS = conntrack_events.$(OBJEXT)
 conntrack_events_OBJECTS = $(am_conntrack_events_OBJECTS)
 conntrack_events_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-conntrack_events_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(conntrack_events_LDFLAGS) $(LDFLAGS) -o $@
+conntrack_events_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(conntrack_events_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_conntrack_filter_OBJECTS = conntrack_filter.$(OBJEXT)
 conntrack_filter_OBJECTS = $(am_conntrack_filter_OBJECTS)
 conntrack_filter_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-conntrack_filter_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(conntrack_filter_LDFLAGS) $(LDFLAGS) -o $@
+conntrack_filter_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(conntrack_filter_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_conntrack_flush_OBJECTS = conntrack_flush.$(OBJEXT)
 conntrack_flush_OBJECTS = $(am_conntrack_flush_OBJECTS)
 conntrack_flush_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-conntrack_flush_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(conntrack_flush_LDFLAGS) $(LDFLAGS) -o $@
+conntrack_flush_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(conntrack_flush_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_conntrack_get_OBJECTS = conntrack_get.$(OBJEXT)
 conntrack_get_OBJECTS = $(am_conntrack_get_OBJECTS)
 conntrack_get_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-conntrack_get_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+conntrack_get_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(conntrack_get_LDFLAGS) $(LDFLAGS) -o $@
 am_conntrack_grp_create_OBJECTS = conntrack_grp_create.$(OBJEXT)
 conntrack_grp_create_OBJECTS = $(am_conntrack_grp_create_OBJECTS)
 conntrack_grp_create_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-conntrack_grp_create_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(conntrack_grp_create_LDFLAGS) $(LDFLAGS) -o $@
+conntrack_grp_create_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(conntrack_grp_create_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am_conntrack_master_OBJECTS = conntrack_master.$(OBJEXT)
 conntrack_master_OBJECTS = $(am_conntrack_master_OBJECTS)
 conntrack_master_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-conntrack_master_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(conntrack_master_LDFLAGS) $(LDFLAGS) -o $@
+conntrack_master_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(conntrack_master_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_conntrack_update_OBJECTS = conntrack_update.$(OBJEXT)
 conntrack_update_OBJECTS = $(am_conntrack_update_OBJECTS)
 conntrack_update_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-conntrack_update_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(conntrack_update_LDFLAGS) $(LDFLAGS) -o $@
+conntrack_update_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(conntrack_update_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_ctexp_events_OBJECTS = ctexp_events.$(OBJEXT)
 ctexp_events_OBJECTS = $(am_ctexp_events_OBJECTS)
 ctexp_events_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-ctexp_events_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+ctexp_events_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(ctexp_events_LDFLAGS) $(LDFLAGS) -o $@
 am_expect_create_OBJECTS = expect_create.$(OBJEXT)
 expect_create_OBJECTS = $(am_expect_create_OBJECTS)
 expect_create_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-expect_create_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+expect_create_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(expect_create_LDFLAGS) $(LDFLAGS) -o $@
 am_expect_create_userspace_OBJECTS =  \
@@ -140,52 +153,66 @@ expect_create_userspace_OBJECTS =  \
 	$(am_expect_create_userspace_OBJECTS)
 expect_create_userspace_DEPENDENCIES =  \
 	../src/libnetfilter_conntrack.la
-expect_create_userspace_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(expect_create_userspace_LDFLAGS) $(LDFLAGS) -o $@
+expect_create_userspace_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(expect_create_userspace_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am_expect_delete_OBJECTS = expect_delete.$(OBJEXT)
 expect_delete_OBJECTS = $(am_expect_delete_OBJECTS)
 expect_delete_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-expect_delete_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+expect_delete_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(expect_delete_LDFLAGS) $(LDFLAGS) -o $@
 am_expect_dump_OBJECTS = expect_dump.$(OBJEXT)
 expect_dump_OBJECTS = $(am_expect_dump_OBJECTS)
 expect_dump_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-expect_dump_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+expect_dump_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(expect_dump_LDFLAGS) $(LDFLAGS) -o $@
 am_expect_events_OBJECTS = expect_events.$(OBJEXT)
 expect_events_OBJECTS = $(am_expect_events_OBJECTS)
 expect_events_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-expect_events_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+expect_events_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(expect_events_LDFLAGS) $(LDFLAGS) -o $@
 am_expect_flush_OBJECTS = expect_flush.$(OBJEXT)
 expect_flush_OBJECTS = $(am_expect_flush_OBJECTS)
 expect_flush_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-expect_flush_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+expect_flush_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(expect_flush_LDFLAGS) $(LDFLAGS) -o $@
 am_expect_get_OBJECTS = expect_get.$(OBJEXT)
 expect_get_OBJECTS = $(am_expect_get_OBJECTS)
 expect_get_DEPENDENCIES = ../src/libnetfilter_conntrack.la
-expect_get_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+expect_get_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(expect_get_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
-depcomp = $(SHELL) $(top_srcdir)/depcomp
+depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_$(V))
+am__v_CC_ = $(am__v_CC_$(AM_DEFAULT_VERBOSITY))
+am__v_CC_0 = @echo "  CC    " $@;
+AM_V_at = $(am__v_at_$(V))
+am__v_at_ = $(am__v_at_$(AM_DEFAULT_VERBOSITY))
+am__v_at_0 = @
 CCLD = $(CC)
-LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_$(V))
+am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
+am__v_CCLD_0 = @echo "  CCLD  " $@;
+AM_V_GEN = $(am__v_GEN_$(V))
+am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
+am__v_GEN_0 = @echo "  GEN   " $@;
 SOURCES = $(conntrack_create_SOURCES) $(conntrack_create_nat_SOURCES) \
 	$(conntrack_delete_SOURCES) $(conntrack_dump_SOURCES) \
 	$(conntrack_events_SOURCES) $(conntrack_filter_SOURCES) \
@@ -211,6 +238,7 @@ CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AR = @AR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
@@ -330,7 +358,7 @@ top_srcdir = @top_srcdir@
 # Please read Chapter 6 "Library interface versions" of the libtool
 # documentation before making any modification
 # http://sources.redhat.com/autobook/autobook/autobook_91.html
-LIBVERSION = 4:3:1
+LIBVERSION = 5:0:2
 AM_CPPFLAGS = -I$(top_srcdir)/include
 AM_CFLAGS = -Wall ${LIBNFNETLINK_CFLAGS}
 conntrack_grp_create_SOURCES = conntrack_grp_create.c
@@ -435,61 +463,61 @@ clean-checkPROGRAMS:
 	rm -f $$list
 conntrack_create$(EXEEXT): $(conntrack_create_OBJECTS) $(conntrack_create_DEPENDENCIES) 
 	@rm -f conntrack_create$(EXEEXT)
-	$(conntrack_create_LINK) $(conntrack_create_OBJECTS) $(conntrack_create_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(conntrack_create_LINK) $(conntrack_create_OBJECTS) $(conntrack_create_LDADD) $(LIBS)
 conntrack_create_nat$(EXEEXT): $(conntrack_create_nat_OBJECTS) $(conntrack_create_nat_DEPENDENCIES) 
 	@rm -f conntrack_create_nat$(EXEEXT)
-	$(conntrack_create_nat_LINK) $(conntrack_create_nat_OBJECTS) $(conntrack_create_nat_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(conntrack_create_nat_LINK) $(conntrack_create_nat_OBJECTS) $(conntrack_create_nat_LDADD) $(LIBS)
 conntrack_delete$(EXEEXT): $(conntrack_delete_OBJECTS) $(conntrack_delete_DEPENDENCIES) 
 	@rm -f conntrack_delete$(EXEEXT)
-	$(conntrack_delete_LINK) $(conntrack_delete_OBJECTS) $(conntrack_delete_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(conntrack_delete_LINK) $(conntrack_delete_OBJECTS) $(conntrack_delete_LDADD) $(LIBS)
 conntrack_dump$(EXEEXT): $(conntrack_dump_OBJECTS) $(conntrack_dump_DEPENDENCIES) 
 	@rm -f conntrack_dump$(EXEEXT)
-	$(conntrack_dump_LINK) $(conntrack_dump_OBJECTS) $(conntrack_dump_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(conntrack_dump_LINK) $(conntrack_dump_OBJECTS) $(conntrack_dump_LDADD) $(LIBS)
 conntrack_events$(EXEEXT): $(conntrack_events_OBJECTS) $(conntrack_events_DEPENDENCIES) 
 	@rm -f conntrack_events$(EXEEXT)
-	$(conntrack_events_LINK) $(conntrack_events_OBJECTS) $(conntrack_events_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(conntrack_events_LINK) $(conntrack_events_OBJECTS) $(conntrack_events_LDADD) $(LIBS)
 conntrack_filter$(EXEEXT): $(conntrack_filter_OBJECTS) $(conntrack_filter_DEPENDENCIES) 
 	@rm -f conntrack_filter$(EXEEXT)
-	$(conntrack_filter_LINK) $(conntrack_filter_OBJECTS) $(conntrack_filter_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(conntrack_filter_LINK) $(conntrack_filter_OBJECTS) $(conntrack_filter_LDADD) $(LIBS)
 conntrack_flush$(EXEEXT): $(conntrack_flush_OBJECTS) $(conntrack_flush_DEPENDENCIES) 
 	@rm -f conntrack_flush$(EXEEXT)
-	$(conntrack_flush_LINK) $(conntrack_flush_OBJECTS) $(conntrack_flush_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(conntrack_flush_LINK) $(conntrack_flush_OBJECTS) $(conntrack_flush_LDADD) $(LIBS)
 conntrack_get$(EXEEXT): $(conntrack_get_OBJECTS) $(conntrack_get_DEPENDENCIES) 
 	@rm -f conntrack_get$(EXEEXT)
-	$(conntrack_get_LINK) $(conntrack_get_OBJECTS) $(conntrack_get_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(conntrack_get_LINK) $(conntrack_get_OBJECTS) $(conntrack_get_LDADD) $(LIBS)
 conntrack_grp_create$(EXEEXT): $(conntrack_grp_create_OBJECTS) $(conntrack_grp_create_DEPENDENCIES) 
 	@rm -f conntrack_grp_create$(EXEEXT)
-	$(conntrack_grp_create_LINK) $(conntrack_grp_create_OBJECTS) $(conntrack_grp_create_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(conntrack_grp_create_LINK) $(conntrack_grp_create_OBJECTS) $(conntrack_grp_create_LDADD) $(LIBS)
 conntrack_master$(EXEEXT): $(conntrack_master_OBJECTS) $(conntrack_master_DEPENDENCIES) 
 	@rm -f conntrack_master$(EXEEXT)
-	$(conntrack_master_LINK) $(conntrack_master_OBJECTS) $(conntrack_master_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(conntrack_master_LINK) $(conntrack_master_OBJECTS) $(conntrack_master_LDADD) $(LIBS)
 conntrack_update$(EXEEXT): $(conntrack_update_OBJECTS) $(conntrack_update_DEPENDENCIES) 
 	@rm -f conntrack_update$(EXEEXT)
-	$(conntrack_update_LINK) $(conntrack_update_OBJECTS) $(conntrack_update_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(conntrack_update_LINK) $(conntrack_update_OBJECTS) $(conntrack_update_LDADD) $(LIBS)
 ctexp_events$(EXEEXT): $(ctexp_events_OBJECTS) $(ctexp_events_DEPENDENCIES) 
 	@rm -f ctexp_events$(EXEEXT)
-	$(ctexp_events_LINK) $(ctexp_events_OBJECTS) $(ctexp_events_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(ctexp_events_LINK) $(ctexp_events_OBJECTS) $(ctexp_events_LDADD) $(LIBS)
 expect_create$(EXEEXT): $(expect_create_OBJECTS) $(expect_create_DEPENDENCIES) 
 	@rm -f expect_create$(EXEEXT)
-	$(expect_create_LINK) $(expect_create_OBJECTS) $(expect_create_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(expect_create_LINK) $(expect_create_OBJECTS) $(expect_create_LDADD) $(LIBS)
 expect_create_userspace$(EXEEXT): $(expect_create_userspace_OBJECTS) $(expect_create_userspace_DEPENDENCIES) 
 	@rm -f expect_create_userspace$(EXEEXT)
-	$(expect_create_userspace_LINK) $(expect_create_userspace_OBJECTS) $(expect_create_userspace_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(expect_create_userspace_LINK) $(expect_create_userspace_OBJECTS) $(expect_create_userspace_LDADD) $(LIBS)
 expect_delete$(EXEEXT): $(expect_delete_OBJECTS) $(expect_delete_DEPENDENCIES) 
 	@rm -f expect_delete$(EXEEXT)
-	$(expect_delete_LINK) $(expect_delete_OBJECTS) $(expect_delete_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(expect_delete_LINK) $(expect_delete_OBJECTS) $(expect_delete_LDADD) $(LIBS)
 expect_dump$(EXEEXT): $(expect_dump_OBJECTS) $(expect_dump_DEPENDENCIES) 
 	@rm -f expect_dump$(EXEEXT)
-	$(expect_dump_LINK) $(expect_dump_OBJECTS) $(expect_dump_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(expect_dump_LINK) $(expect_dump_OBJECTS) $(expect_dump_LDADD) $(LIBS)
 expect_events$(EXEEXT): $(expect_events_OBJECTS) $(expect_events_DEPENDENCIES) 
 	@rm -f expect_events$(EXEEXT)
-	$(expect_events_LINK) $(expect_events_OBJECTS) $(expect_events_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(expect_events_LINK) $(expect_events_OBJECTS) $(expect_events_LDADD) $(LIBS)
 expect_flush$(EXEEXT): $(expect_flush_OBJECTS) $(expect_flush_DEPENDENCIES) 
 	@rm -f expect_flush$(EXEEXT)
-	$(expect_flush_LINK) $(expect_flush_OBJECTS) $(expect_flush_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(expect_flush_LINK) $(expect_flush_OBJECTS) $(expect_flush_LDADD) $(LIBS)
 expect_get$(EXEEXT): $(expect_get_OBJECTS) $(expect_get_DEPENDENCIES) 
 	@rm -f expect_get$(EXEEXT)
-	$(expect_get_LINK) $(expect_get_OBJECTS) $(expect_get_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(expect_get_LINK) $(expect_get_OBJECTS) $(expect_get_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -518,25 +546,28 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/expect_get.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
 @am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
 @am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
 @am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
 @am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<

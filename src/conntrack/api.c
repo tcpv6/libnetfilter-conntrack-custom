@@ -1,8 +1,10 @@
 /*
- * (C) 2006 by Pablo Neira Ayuso <pablo@netfilter.org>
+ * (C) 2005-2011 by Pablo Neira Ayuso <pablo@netfilter.org>
  *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  */
 
 #include <stdlib.h>
@@ -375,7 +377,7 @@ void nfct_set_attr(struct nf_conntrack *ct,
 
 	if (set_attr_array[type]) {
 		set_attr_array[type](ct, value);
-		set_bit(type, ct->set);
+		set_bit(type, ct->head.set);
 	}
 }
 
@@ -449,7 +451,7 @@ const void *nfct_get_attr(const struct nf_conntrack *ct,
 		return NULL;
 	}
 
-	if (!test_bit(type, ct->set)) {
+	if (!test_bit(type, ct->head.set)) {
 		errno = ENODATA;
 		return NULL;
 	}
@@ -540,7 +542,7 @@ int nfct_attr_is_set(const struct nf_conntrack *ct,
 		errno = EINVAL;
 		return -1;
 	}
-	return test_bit(type, ct->set);
+	return test_bit(type, ct->head.set);
 }
 
 /**
@@ -565,7 +567,7 @@ int nfct_attr_is_set_array(const struct nf_conntrack *ct,
 			errno = EINVAL;
 			return -1;
 		}
-		if (!test_bit(type_array[i], ct->set))
+		if (!test_bit(type_array[i], ct->head.set))
 			return 0;
 	}
 	return 1;
@@ -588,7 +590,7 @@ int nfct_attr_unset(struct nf_conntrack *ct,
 		errno = EINVAL;
 		return -1;
 	}
-	unset_bit(type, ct->set);
+	unset_bit(type, ct->head.set);
 
 	return 0;
 }
@@ -613,7 +615,7 @@ void nfct_set_attr_grp(struct nf_conntrack *ct,
 
 	if (set_attr_grp_array[type]) {
 		set_attr_grp_array[type](ct, data);
-		set_bitmask_u32(ct->set, attr_grp_bitmask[type], __NFCT_BITSET);
+		set_bitmask_u32(ct->head.set, attr_grp_bitmask[type], __NFCT_BITSET);
 	}
 }
 
@@ -636,7 +638,7 @@ int nfct_get_attr_grp(const struct nf_conntrack *ct,
 		errno = EINVAL;
 		return -1;
 	}
-	if (!test_bitmask_u32(ct->set, attr_grp_bitmask[type], __NFCT_BITSET)) {
+	if (!test_bitmask_u32(ct->head.set, attr_grp_bitmask[type], __NFCT_BITSET)) {
 		errno = ENODATA;
 		return -1;
 	}
@@ -661,7 +663,7 @@ int nfct_attr_grp_is_set(const struct nf_conntrack *ct,
 		errno = EINVAL;
 		return -1;
 	}
-	return test_bitmask_u32(ct->set, attr_grp_bitmask[type], __NFCT_BITSET);
+	return test_bitmask_u32(ct->head.set, attr_grp_bitmask[type], __NFCT_BITSET);
 }
 
 /**
@@ -681,7 +683,7 @@ int nfct_attr_grp_unset(struct nf_conntrack *ct,
 		errno = EINVAL;
 		return -1;
 	}
-	unset_bitmask_u32(ct->set, attr_grp_bitmask[type], __NFCT_BITSET);
+	unset_bitmask_u32(ct->head.set, attr_grp_bitmask[type], __NFCT_BITSET);
 
 	return 0;
 }
@@ -1017,10 +1019,6 @@ int nfct_snprintf(char *buf,
 }
 
 /**
- * @}
- */
-
-/**
  * nfct_compare - compare two conntrack objects
  * \param ct1 pointer to a valid conntrack object
  * \param ct2 pointer to a valid conntrack object
@@ -1130,10 +1128,10 @@ void nfct_copy(struct nf_conntrack *ct1,
 	}
 	if (flags == NFCT_CP_ALL) {
 		for (i=0; i<ATTR_MAX; i++) {
-			if (test_bit(i, ct2->set)) {
+			if (test_bit(i, ct2->head.set)) {
 				assert(copy_attr_array[i]);
 				copy_attr_array[i](ct1, ct2);
-				set_bit(i, ct1->set);
+				set_bit(i, ct1->head.set);
 			}
 		}
 		return;
@@ -1156,10 +1154,10 @@ void nfct_copy(struct nf_conntrack *ct1,
 
 	if (flags & NFCT_CP_ORIG) {
 		for (i=0; i<__CP_ORIG_MAX; i++) {
-			if (test_bit(cp_orig_mask[i], ct2->set)) {
+			if (test_bit(cp_orig_mask[i], ct2->head.set)) {
 				assert(copy_attr_array[i]);
 				copy_attr_array[cp_orig_mask[i]](ct1, ct2);
-				set_bit(cp_orig_mask[i], ct1->set);
+				set_bit(cp_orig_mask[i], ct1->head.set);
 			}
 		}
 	}
@@ -1178,20 +1176,20 @@ void nfct_copy(struct nf_conntrack *ct1,
 
 	if (flags & NFCT_CP_REPL) {
 		for (i=0; i<__CP_REPL_MAX; i++) {
-			if (test_bit(cp_repl_mask[i], ct2->set)) {
+			if (test_bit(cp_repl_mask[i], ct2->head.set)) {
 				assert(copy_attr_array[i]);
 				copy_attr_array[cp_repl_mask[i]](ct1, ct2);
-				set_bit(cp_repl_mask[i], ct1->set);
+				set_bit(cp_repl_mask[i], ct1->head.set);
 			}
 		}
 	}
 
 	if (flags & NFCT_CP_META) {
 		for (i=ATTR_TCP_STATE; i<ATTR_MAX; i++) {
-			if (test_bit(i, ct2->set)) {
+			if (test_bit(i, ct2->head.set)) {
 				assert(copy_attr_array[i]),
 				copy_attr_array[i](ct1, ct2);
-				set_bit(i, ct1->set);
+				set_bit(i, ct1->head.set);
 			}
 		}
 	}
@@ -1209,10 +1207,10 @@ void nfct_copy_attr(struct nf_conntrack *ct1,
 		    const struct nf_conntrack *ct2,
 		    const enum nf_conntrack_attr type)
 {
-	if (test_bit(type, ct2->set)) {
+	if (test_bit(type, ct2->head.set)) {
 		assert(copy_attr_array[type]);
 		copy_attr_array[type](ct1, ct2);
-		set_bit(type, ct1->set);
+		set_bit(type, ct1->head.set);
 	}
 }
 

@@ -1,8 +1,10 @@
 /*
- * (C) 2007 by Pablo Neira Ayuso <pablo@netfilter.org>
+ * (C) 2005-2011 by Pablo Neira Ayuso <pablo@netfilter.org>
  *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  */
 
 #include "internal/internal.h"
@@ -15,10 +17,10 @@ static int __cmp(int attr,
 		 	    const struct nf_conntrack *ct2,
 			    unsigned int flags))
 {
-	if (test_bit(attr, ct1->set) && test_bit(attr, ct2->set)) {
+	if (test_bit(attr, ct1->head.set) && test_bit(attr, ct2->head.set)) {
 		return cmp(ct1, ct2, flags);
 	} else if (flags & NFCT_CMP_MASK &&
-		   test_bit(attr, ct1->set)) {
+		   test_bit(attr, ct1->head.set)) {
 		return 0;
 	} else if (flags & NFCT_CMP_STRICT) {
 		return 0;
@@ -31,8 +33,7 @@ cmp_orig_l3proto(const struct nf_conntrack *ct1,
 		 const struct nf_conntrack *ct2,
 		 unsigned int flags)
 {
-	return (ct1->tuple[__DIR_ORIG].l3protonum ==
-		ct2->tuple[__DIR_ORIG].l3protonum);
+	return (ct1->head.orig.l3protonum == ct2->head.orig.l3protonum);
 }
 
 static int
@@ -40,8 +41,7 @@ cmp_icmp_id(const struct nf_conntrack *ct1,
 	    const struct nf_conntrack *ct2,
 	    unsigned int flags)
 {
-	return (ct1->tuple[__DIR_ORIG].l4src.icmp.id ==
-		ct2->tuple[__DIR_ORIG].l4src.icmp.id);
+	return (ct1->head.orig.l4src.icmp.id == ct2->head.orig.l4src.icmp.id);
 }
 
 static int
@@ -49,8 +49,8 @@ cmp_icmp_type(const struct nf_conntrack *ct1,
 	      const struct nf_conntrack *ct2,
 	      unsigned int flags)
 {
-	return (ct1->tuple[__DIR_ORIG].l4dst.icmp.type ==
-		ct2->tuple[__DIR_ORIG].l4dst.icmp.type);
+	return (ct1->head.orig.l4dst.icmp.type ==
+		ct2->head.orig.l4dst.icmp.type);
 }
 
 static int
@@ -58,8 +58,8 @@ cmp_icmp_code(const struct nf_conntrack *ct1,
 	      const struct nf_conntrack *ct2,
 	      unsigned int flags)
 {
-	return (ct1->tuple[__DIR_ORIG].l4dst.icmp.code ==
-		ct2->tuple[__DIR_ORIG].l4dst.icmp.code);
+	return (ct1->head.orig.l4dst.icmp.code ==
+		ct2->head.orig.l4dst.icmp.code);
 }
 
 static int
@@ -67,8 +67,7 @@ cmp_orig_port_src(const struct nf_conntrack *ct1,
 		  const struct nf_conntrack *ct2,
 		  unsigned int flags)
 {
-	return (ct1->tuple[__DIR_ORIG].l4src.all ==
-		ct2->tuple[__DIR_ORIG].l4src.all);
+	return (ct1->head.orig.l4src.all == ct2->head.orig.l4src.all);
 }
 
 static int
@@ -76,8 +75,7 @@ cmp_orig_port_dst(const struct nf_conntrack *ct1,
 		  const struct nf_conntrack *ct2,
 		  unsigned int flags)
 {
-	return (ct1->tuple[__DIR_ORIG].l4dst.all ==
-		ct2->tuple[__DIR_ORIG].l4dst.all);
+	return (ct1->head.orig.l4dst.all == ct2->head.orig.l4dst.all);
 }
 
 static int 
@@ -85,10 +83,10 @@ cmp_orig_l4proto(const struct nf_conntrack *ct1,
 		 const struct nf_conntrack *ct2,
 		 unsigned int flags)
 {
-	if (ct1->tuple[__DIR_ORIG].protonum != ct2->tuple[__DIR_ORIG].protonum)
+	if (ct1->head.orig.protonum != ct2->head.orig.protonum)
 		return 0;
 
-	switch(ct1->tuple[__DIR_ORIG].protonum) {
+	switch(ct1->head.orig.protonum) {
 	case IPPROTO_ICMP:
 	case IPPROTO_ICMPV6:
 		if (!__cmp(ATTR_ICMP_ID, ct1, ct2, flags, cmp_icmp_id))
@@ -119,22 +117,21 @@ cmp_orig_ipv4_src(const struct nf_conntrack *ct1,
 		  const struct nf_conntrack *ct2,
 		  unsigned int flags)
 {
-	return (ct1->tuple[__DIR_ORIG].src.v4 == ct2->tuple[__DIR_ORIG].src.v4);}
+	return (ct1->head.orig.src.v4 == ct2->head.orig.src.v4);}
 
 static int 
 cmp_orig_ipv4_dst(const struct nf_conntrack *ct1,
 		  const struct nf_conntrack *ct2,
 		  unsigned int flags)
 {
-	return (ct1->tuple[__DIR_ORIG].dst.v4 == ct2->tuple[__DIR_ORIG].dst.v4);}
+	return (ct1->head.orig.dst.v4 == ct2->head.orig.dst.v4);}
 
 static int 
 cmp_orig_ipv6_src(const struct nf_conntrack *ct1,
 		  const struct nf_conntrack *ct2,
 		  unsigned int flags)
 {
-	return (memcmp(&ct1->tuple[__DIR_ORIG].src.v6,
-		&ct2->tuple[__DIR_ORIG].src.v6,
+	return (memcmp(&ct1->head.orig.src.v6, &ct2->head.orig.src.v6,
 		sizeof(struct in6_addr)) == 0);
 }
 
@@ -143,14 +140,13 @@ cmp_orig_ipv6_dst(const struct nf_conntrack *ct1,
 		  const struct nf_conntrack *ct2,
 		  unsigned int flags)
 {
-	return (memcmp(&ct1->tuple[__DIR_ORIG].dst.v6,
-		&ct2->tuple[__DIR_ORIG].dst.v6,
+	return (memcmp(&ct1->head.orig.dst.v6, &ct2->head.orig.dst.v6,
 		sizeof(struct in6_addr)) == 0);
 }
 
-static int cmp_orig(const struct nf_conntrack *ct1,
-		    const struct nf_conntrack *ct2,
-		    unsigned int flags)
+int __cmp_orig(const struct nf_conntrack *ct1,
+	       const struct nf_conntrack *ct2,
+	       unsigned int flags)
 {
 	if (!__cmp(ATTR_ORIG_L3PROTO, ct1, ct2, flags, cmp_orig_l3proto))
 		return 0;
@@ -173,8 +169,7 @@ cmp_repl_l3proto(const struct nf_conntrack *ct1,
 		 const struct nf_conntrack *ct2,
 		 unsigned int flags)
 {
-	return (ct1->tuple[__DIR_REPL].l3protonum ==
-		ct2->tuple[__DIR_REPL].l3protonum);
+	return (ct1->repl.l3protonum == ct2->repl.l3protonum);
 }
 
 static int
@@ -182,8 +177,7 @@ cmp_repl_port_src(const struct nf_conntrack *ct1,
 		  const struct nf_conntrack *ct2,
 		  unsigned int flags)
 {
-	return (ct1->tuple[__DIR_REPL].l4src.all ==
-		ct2->tuple[__DIR_REPL].l4src.all);
+	return (ct1->repl.l4src.all == ct2->repl.l4src.all);
 }
 
 static int
@@ -191,8 +185,7 @@ cmp_repl_port_dst(const struct nf_conntrack *ct1,
 		  const struct nf_conntrack *ct2,
 		  unsigned int flags)
 {
-	return (ct1->tuple[__DIR_REPL].l4dst.all ==
-		ct2->tuple[__DIR_REPL].l4dst.all);
+	return (ct1->repl.l4dst.all == ct2->repl.l4dst.all);
 }
 
 static int 
@@ -200,10 +193,10 @@ cmp_repl_l4proto(const struct nf_conntrack *ct1,
 		 const struct nf_conntrack *ct2,
 		 unsigned int flags)
 {
-	if (ct1->tuple[__DIR_REPL].protonum != ct2->tuple[__DIR_REPL].protonum)
+	if (ct1->repl.protonum != ct2->repl.protonum)
 		return 0;
 
-	switch(ct1->tuple[__DIR_REPL].protonum) {
+	switch(ct1->repl.protonum) {
 	case IPPROTO_ICMP:
 	case IPPROTO_ICMPV6:
 		if (!__cmp(ATTR_ICMP_ID, ct1, ct2, flags, cmp_icmp_id))
@@ -234,22 +227,21 @@ cmp_repl_ipv4_src(const struct nf_conntrack *ct1,
 		  const struct nf_conntrack *ct2,
 		  unsigned int flags)
 {
-	return (ct1->tuple[__DIR_REPL].src.v4 == ct2->tuple[__DIR_REPL].src.v4);}
+	return (ct1->repl.src.v4 == ct2->repl.src.v4);}
 
 static int 
 cmp_repl_ipv4_dst(const struct nf_conntrack *ct1,
 		  const struct nf_conntrack *ct2,
 		  unsigned int flags)
 {
-	return (ct1->tuple[__DIR_REPL].dst.v4 == ct2->tuple[__DIR_REPL].dst.v4);}
+	return (ct1->repl.dst.v4 == ct2->repl.dst.v4);}
 
 static int 
 cmp_repl_ipv6_src(const struct nf_conntrack *ct1,
 		  const struct nf_conntrack *ct2,
 		  unsigned int flags)
 {
-	return (memcmp(&ct1->tuple[__DIR_REPL].src.v6,
-		&ct2->tuple[__DIR_REPL].src.v6,
+	return (memcmp(&ct1->repl.src.v6, &ct2->repl.src.v6,
 		sizeof(struct in6_addr)) == 0);
 }
 
@@ -258,8 +250,7 @@ cmp_repl_ipv6_dst(const struct nf_conntrack *ct1,
 		  const struct nf_conntrack *ct2,
 		  unsigned int flags)
 {
-	return (memcmp(&ct1->tuple[__DIR_REPL].dst.v6,
-		&ct2->tuple[__DIR_REPL].dst.v6,
+	return (memcmp(&ct1->repl.dst.v6, &ct2->repl.dst.v6,
 		sizeof(struct in6_addr)) == 0);
 }
 
@@ -408,10 +399,10 @@ int __compare(const struct nf_conntrack *ct1,
 {
 	if ((flags & ~(NFCT_CMP_MASK|NFCT_CMP_STRICT)) == NFCT_CMP_ALL)
 		return cmp_meta(ct1, ct2, flags) &&
-		       cmp_orig(ct1, ct2, flags) &&
+		       __cmp_orig(ct1, ct2, flags) &&
 		       cmp_repl(ct1, ct2, flags);
 
-	if (flags & NFCT_CMP_ORIG && !cmp_orig(ct1, ct2, flags))
+	if (flags & NFCT_CMP_ORIG && !__cmp_orig(ct1, ct2, flags))
 		return 0;
 
 	if (flags & NFCT_CMP_REPL && !cmp_repl(ct1, ct2, flags))

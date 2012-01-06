@@ -38,6 +38,8 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/doxygen.cfg.in \
 	$(srcdir)/libnetfilter_conntrack.pc.in \
 	$(top_srcdir)/Make_global.am $(top_srcdir)/configure COPYING \
+	build-aux/config.guess build-aux/config.sub build-aux/depcomp \
+	build-aux/install-sh build-aux/ltmain.sh build-aux/missing \
 	config.guess config.sub depcomp install-sh ltmain.sh missing
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -52,6 +54,12 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
 mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES = libnetfilter_conntrack.pc doxygen.cfg
 CONFIG_CLEAN_VPATH_FILES =
+AM_V_GEN = $(am__v_GEN_$(V))
+am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
+am__v_GEN_0 = @echo "  GEN   " $@;
+AM_V_at = $(am__v_at_$(V))
+am__v_at_ = $(am__v_at_$(AM_DEFAULT_VERBOSITY))
+am__v_at_0 = @
 SOURCES =
 DIST_SOURCES =
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
@@ -124,12 +132,13 @@ am__relativize = \
     dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
   done; \
   reldir="$$dir2"
-DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2
 GZIP_ENV = --best
+DIST_ARCHIVES = $(distdir).tar.bz2
 distuninstallcheck_listfiles = find . -type f -print
 distcleancheck_listfiles = find . -type f -print
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AR = @AR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
@@ -249,7 +258,7 @@ top_srcdir = @top_srcdir@
 # Please read Chapter 6 "Library interface versions" of the libtool
 # documentation before making any modification
 # http://sources.redhat.com/autobook/autobook/autobook_91.html
-LIBVERSION = 4:3:1
+LIBVERSION = 5:0:2
 AM_CPPFLAGS = -I$(top_srcdir)/include
 AM_CFLAGS = -Wall ${LIBNFNETLINK_CFLAGS}
 ACLOCAL_AMFLAGS = -I m4
@@ -560,7 +569,6 @@ dist-zip: distdir
 	$(am__remove_distdir)
 
 dist dist-all: distdir
-	tardir=$(distdir) && $(am__tar) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
 	tardir=$(distdir) && $(am__tar) | bzip2 -9 -c >$(distdir).tar.bz2
 	$(am__remove_distdir)
 

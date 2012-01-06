@@ -1,8 +1,10 @@
 /*
- * (C) 2006-2007 by Pablo Neira Ayuso <pablo@netfilter.org>
+ * (C) 2005-2011 by Pablo Neira Ayuso <pablo@netfilter.org>
  *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  */
 
 #include "internal/internal.h"
@@ -37,6 +39,11 @@ static const void *get_exp_attr_flags(const struct nf_expect *exp)
 	return &exp->flags;
 }
 
+static const void *get_exp_attr_helper_name(const struct nf_expect *exp)
+{
+	return exp->helper_name;
+}
+
 const get_exp_attr get_exp_attr_array[ATTR_EXP_MAX] = {
 	[ATTR_EXP_MASTER]		= get_exp_attr_master,
 	[ATTR_EXP_EXPECTED]		= get_exp_attr_expected,
@@ -44,4 +51,5 @@ const get_exp_attr get_exp_attr_array[ATTR_EXP_MAX] = {
 	[ATTR_EXP_TIMEOUT]		= get_exp_attr_timeout,
 	[ATTR_EXP_ZONE]			= get_exp_attr_zone,
 	[ATTR_EXP_FLAGS]		= get_exp_attr_flags,
+	[ATTR_EXP_HELPER_NAME]		= get_exp_attr_helper_name,
 };

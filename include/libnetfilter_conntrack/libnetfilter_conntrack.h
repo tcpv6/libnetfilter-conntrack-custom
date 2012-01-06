@@ -1,8 +1,10 @@
 /*
- * (C) 2005-2008 by Pablo Neira Ayuso <pablo@netfilter.org>
+ * (C) 2005-2011 by Pablo Neira Ayuso <pablo@netfilter.org>
  *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  */
 
 #ifndef _LIBNETFILTER_CONNTRACK_H_
@@ -507,6 +509,7 @@ enum nf_expect_attr {
 	ATTR_EXP_TIMEOUT,	/* u32 bits */
 	ATTR_EXP_ZONE,		/* u16 bits */
 	ATTR_EXP_FLAGS,		/* u32 bits */
+	ATTR_EXP_HELPER_NAME,	/* string (16 bytes max) */
 	ATTR_EXP_MAX
 };
 
@@ -595,6 +598,15 @@ extern int nfexp_snprintf(char *buf,
 			  const unsigned int msg_type,
 			  const unsigned int out_type,
 			  const unsigned int out_flags);
+
+/* compare */
+extern int nfexp_cmp(const struct nf_expect *exp1,
+		     const struct nf_expect *exp2,
+		     unsigned int flags);
+
+extern int nfexp_send(struct nfct_handle *h,
+		      const enum nf_conntrack_query qt,
+		      const void *data);
 
 extern int nfexp_catch(struct nfct_handle *h);
 
@@ -709,6 +721,11 @@ enum ip_conntrack_status {
 #define NFCT_DIR_ORIGINAL 0
 #define NFCT_DIR_REPLY 1
 #define NFCT_DIR_MAX NFCT_DIR_REPLY+1
+
+/* xt_helper uses a length size of 30 bytes, however, no helper name in
+ * the tree has exceeded 16 bytes length. Since 2.6.29, the maximum
+ * length accepted is 16 bytes, this limit is enforced during module load. */
+#define NFCT_HELPER_NAME_MAX	16
 
 #ifdef __cplusplus
 }

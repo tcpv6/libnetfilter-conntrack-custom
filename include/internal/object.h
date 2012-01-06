@@ -6,6 +6,8 @@
 #ifndef _NFCT_OBJECT_H_
 #define _NFCT_OBJECT_H_
 
+#include <libnetfilter_conntrack/libnetfilter_conntrack.h>
+
 /*
  * nfct callback handler object
  */
@@ -107,18 +109,12 @@ struct __nfct_tuple {
 	u_int8_t		protonum;
 	union __nfct_l4_src	l4src;
 	union __nfct_l4_dst	l4dst;
-
-	struct {
-		u_int32_t 	correction_pos;
-		u_int32_t 	offset_before;
-		u_int32_t 	offset_after;
-	} natseq;
 };
 
 #define __DIR_ORIG 		0
 #define __DIR_REPL 		1
+#define __DIR_MAX		__DIR_REPL+1
 #define __DIR_MASTER 		2
-#define __DIR_MAX 		__DIR_MASTER+1
 
 union __nfct_protoinfo {
 	struct {
@@ -150,9 +146,18 @@ struct __nfct_nat {
 	union __nfct_l4_src 	l4min, l4max;
 };
 
+struct nfct_tuple_head {
+	struct __nfct_tuple 	orig;
+
+#define __NFCT_BITSET			3
+	u_int32_t               set[__NFCT_BITSET];
+};
+
 struct nf_conntrack {
-	struct __nfct_tuple 	tuple[__DIR_MAX];
-	
+	struct nfct_tuple_head 	head;
+	struct __nfct_tuple	repl;
+	struct __nfct_tuple	master;
+
 	u_int32_t 	timeout;
 	u_int32_t	mark;
 	u_int32_t	secmark;
@@ -161,11 +166,7 @@ struct nf_conntrack {
 	u_int32_t	id;
 	u_int16_t	zone;
 
-/* xt_helper uses a length size of 30 bytes, however, no helper name in
- * the tree has exceeded 16 bytes length. Since 2.6.29, the maximum
- * length accepted is 16 bytes, this limit is enforced during module load. */
-#define __NFCT_HELPER_NAMELEN		16
-	char 		helper_name[__NFCT_HELPER_NAMELEN];
+	char 		helper_name[NFCT_HELPER_NAME_MAX];
 /* According to Eric Paris <eparis@redhat.com> this field can be up to 4096
  * bytes long. For that reason, we allocate this dynamically. */
 	char		*secctx;
@@ -176,13 +177,15 @@ struct nf_conntrack {
 	struct __nfct_nat 	dnat;
 
 	struct {
+		u_int32_t 	correction_pos;
+		u_int32_t 	offset_before;
+		u_int32_t 	offset_after;
+	} natseq[__DIR_MAX];
+
+	struct {
 		u_int64_t	start;
 		u_int64_t	stop;
 	} timestamp;
-
-/* we've got more than 64 attributes now, we need 96 bits to store them. */
-#define __NFCT_BITSET			3
-	u_int32_t               set[__NFCT_BITSET];
 };
 
 /*
@@ -262,13 +265,15 @@ struct nfct_filter {
  */
 
 struct nf_expect {
-	struct nf_conntrack 	master;
-	struct nf_conntrack 	expected;
-	struct nf_conntrack 	mask;
+	struct nfct_tuple_head	master;
+	struct nfct_tuple_head	expected;
+	struct nfct_tuple_head	mask;
+
 	u_int32_t 		timeout;
 	u_int32_t 		id;
 	u_int16_t		zone;
 	u_int32_t		flags;
+	char 			helper_name[NFCT_HELPER_NAME_MAX];
 
 	u_int32_t 		set[1];
 };

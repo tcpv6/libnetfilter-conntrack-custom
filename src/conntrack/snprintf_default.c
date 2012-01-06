@@ -1,8 +1,10 @@
 /*
- * (C) 2006-2008 by Pablo Neira Ayuso <pablo@netfilter.org>
+ * (C) 2005-2011 by Pablo Neira Ayuso <pablo@netfilter.org>
  *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  */
 
 #include "internal/internal.h"
@@ -12,9 +14,9 @@ static int __snprintf_l3protocol(char *buf,
 				 const struct nf_conntrack *ct)
 {
 	return (snprintf(buf, len, "%-8s %u ", 
-		l3proto2str[ct->tuple[__DIR_ORIG].l3protonum] == NULL ?
-		"unknown" : l3proto2str[ct->tuple[__DIR_ORIG].l3protonum], 
-		 ct->tuple[__DIR_ORIG].l3protonum));
+		l3proto2str[ct->head.orig.l3protonum] == NULL ?
+		"unknown" : l3proto2str[ct->head.orig.l3protonum], 
+		 ct->head.orig.l3protonum));
 }
 
 int __snprintf_protocol(char *buf,
@@ -22,9 +24,9 @@ int __snprintf_protocol(char *buf,
 			const struct nf_conntrack *ct)
 {
 	return (snprintf(buf, len, "%-8s %u ", 
-		proto2str[ct->tuple[__DIR_ORIG].protonum] == NULL ?
-		"unknown" : proto2str[ct->tuple[__DIR_ORIG].protonum], 
-		 ct->tuple[__DIR_ORIG].protonum));
+		proto2str[ct->head.orig.protonum] == NULL ?
+		"unknown" : proto2str[ct->head.orig.protonum], 
+		 ct->head.orig.protonum));
 }
 
 static int __snprintf_timeout(char *buf,
@@ -66,16 +68,18 @@ static int __snprintf_protoinfo_dccp(char *buf,
 
 static int __snprintf_address_ipv4(char *buf,
 				   unsigned int len,
-				   const struct __nfct_tuple *tuple)
+				   const struct __nfct_tuple *tuple,
+				   const char *src_tag,
+				   const char *dst_tag)
 {
 	int ret, size = 0, offset = 0;
 	struct in_addr src = { .s_addr = tuple->src.v4 };
 	struct in_addr dst = { .s_addr = tuple->dst.v4 };
 
-	ret = snprintf(buf, len, "src=%s ", inet_ntoa(src));
+	ret = snprintf(buf, len, "%s=%s ", src_tag, inet_ntoa(src));
 	BUFFER_SIZE(ret, size, len, offset);
 
-	ret = snprintf(buf+offset, len, "dst=%s ", inet_ntoa(dst));
+	ret = snprintf(buf+offset, len, "%s=%s ", dst_tag, inet_ntoa(dst));
 	BUFFER_SIZE(ret, size, len, offset);
 
 	return size;
@@ -83,7 +87,9 @@ static int __snprintf_address_ipv4(char *buf,
 
 static int __snprintf_address_ipv6(char *buf,
 				   unsigned int len,
-				   const struct __nfct_tuple *tuple)
+				   const struct __nfct_tuple *tuple,
+				   const char *src_tag,
+				   const char *dst_tag)
 {
 	int ret, size = 0, offset = 0;
 	struct in6_addr src;
@@ -96,13 +102,13 @@ static int __snprintf_address_ipv6(char *buf,
 	if (!inet_ntop(AF_INET6, &src, tmp, sizeof(tmp)))
 		return -1;
 
-	ret = snprintf(buf, len, "src=%s ", tmp);
+	ret = snprintf(buf, len, "%s=%s ", src_tag, tmp);
 	BUFFER_SIZE(ret, size, len, offset);
 
 	if (!inet_ntop(AF_INET6, &dst, tmp, sizeof(tmp)))
 		return -1;
 
-	ret = snprintf(buf+offset, len-size, "dst=%s ", tmp);
+	ret = snprintf(buf+offset, len-size, "%s=%s ", dst_tag, tmp);
 	BUFFER_SIZE(ret, size, len, offset);
 
 	return size;
@@ -110,16 +116,20 @@ static int __snprintf_address_ipv6(char *buf,
 
 int __snprintf_address(char *buf,
 		       unsigned int len,
-		       const struct __nfct_tuple *tuple)
+		       const struct __nfct_tuple *tuple,
+		       const char *src_tag,
+		       const char *dst_tag)
 {
 	int size = 0;
 
 	switch (tuple->l3protonum) {
 	case AF_INET:
-		size = __snprintf_address_ipv4(buf, len, tuple);
+		size = __snprintf_address_ipv4(buf, len, tuple,
+						src_tag, dst_tag);
 		break;
 	case AF_INET6:
-		size = __snprintf_address_ipv6(buf, len, tuple);
+		size = __snprintf_address_ipv6(buf, len, tuple,
+						src_tag, dst_tag);
 		break;
 	}
 
@@ -304,101 +314,103 @@ int __snprintf_conntrack_default(char *buf,
 	ret = __snprintf_protocol(buf+offset, len, ct);
 	BUFFER_SIZE(ret, size, len, offset);
 
-	if (test_bit(ATTR_TIMEOUT, ct->set)) {
+	if (test_bit(ATTR_TIMEOUT, ct->head.set)) {
 		ret = __snprintf_timeout(buf+offset, len, ct);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 
-        if (test_bit(ATTR_TCP_STATE, ct->set)) {
+        if (test_bit(ATTR_TCP_STATE, ct->head.set)) {
 		ret = __snprintf_protoinfo(buf+offset, len, ct);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 
-	if (test_bit(ATTR_SCTP_STATE, ct->set)) {
+	if (test_bit(ATTR_SCTP_STATE, ct->head.set)) {
 		ret = __snprintf_protoinfo_sctp(buf+offset, len, ct);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 
-	if (test_bit(ATTR_DCCP_STATE, ct->set)) {
+	if (test_bit(ATTR_DCCP_STATE, ct->head.set)) {
 		ret = __snprintf_protoinfo_dccp(buf+offset, len, ct);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 
-	ret = __snprintf_address(buf+offset, len, &ct->tuple[__DIR_ORIG]);
+	ret = __snprintf_address(buf+offset, len, &ct->head.orig,
+				 "src", "dst");
 	BUFFER_SIZE(ret, size, len, offset);
 
-	ret = __snprintf_proto(buf+offset, len, &ct->tuple[__DIR_ORIG]);
+	ret = __snprintf_proto(buf+offset, len, &ct->head.orig);
 	BUFFER_SIZE(ret, size, len, offset);
 
-	if (test_bit(ATTR_ORIG_COUNTER_PACKETS, ct->set) &&
-	    test_bit(ATTR_ORIG_COUNTER_BYTES, ct->set)) {
+	if (test_bit(ATTR_ORIG_COUNTER_PACKETS, ct->head.set) &&
+	    test_bit(ATTR_ORIG_COUNTER_BYTES, ct->head.set)) {
 		ret = __snprintf_counters(buf+offset, len, ct, __DIR_ORIG);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 
-	if (test_bit(ATTR_STATUS, ct->set)) {
+	if (test_bit(ATTR_STATUS, ct->head.set)) {
 		ret = __snprintf_status_not_seen_reply(buf+offset, len, ct);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 
-	ret = __snprintf_address(buf+offset, len, &ct->tuple[__DIR_REPL]);
+	ret = __snprintf_address(buf+offset, len, &ct->repl,
+				 "src", "dst");
 	BUFFER_SIZE(ret, size, len, offset);
 
-	ret = __snprintf_proto(buf+offset, len, &ct->tuple[__DIR_REPL]);
+	ret = __snprintf_proto(buf+offset, len, &ct->repl);
 	BUFFER_SIZE(ret, size, len, offset);
 
-	if (test_bit(ATTR_REPL_COUNTER_PACKETS, ct->set) &&
-	    test_bit(ATTR_REPL_COUNTER_BYTES, ct->set)) {
+	if (test_bit(ATTR_REPL_COUNTER_PACKETS, ct->head.set) &&
+	    test_bit(ATTR_REPL_COUNTER_BYTES, ct->head.set)) {
 		ret = __snprintf_counters(buf+offset, len, ct, __DIR_REPL);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 
-	if (test_bit(ATTR_STATUS, ct->set)) {
+	if (test_bit(ATTR_STATUS, ct->head.set)) {
 		ret = __snprintf_status_assured(buf+offset, len, ct);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 
-	if (test_bit(ATTR_MARK, ct->set)) {
+	if (test_bit(ATTR_MARK, ct->head.set)) {
 		ret = __snprintf_mark(buf+offset, len, ct);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 
-	if (test_bit(ATTR_SECMARK, ct->set)) {
+	if (test_bit(ATTR_SECMARK, ct->head.set)) {
 		ret = __snprintf_secmark(buf+offset, len, ct);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 
-	if (test_bit(ATTR_SECCTX, ct->set)) {
+	if (test_bit(ATTR_SECCTX, ct->head.set)) {
 		ret = __snprintf_secctx(buf+offset, len, ct);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 
-	if (test_bit(ATTR_ZONE, ct->set)) {
+	if (test_bit(ATTR_ZONE, ct->head.set)) {
 		ret = __snprintf_zone(buf+offset, len, ct);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 
-	if (test_bit(ATTR_TIMESTAMP_START, ct->set)) {
+	if (test_bit(ATTR_TIMESTAMP_START, ct->head.set)) {
 		ret = __snprintf_timestamp_delta(buf+offset, len, ct);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 	if (flags & NFCT_OF_TIMESTAMP) {
-		if (test_bit(ATTR_TIMESTAMP_START, ct->set)) {
+		if (test_bit(ATTR_TIMESTAMP_START, ct->head.set)) {
 			ret = __snprintf_timestamp_start(buf+offset, len, ct);
 			BUFFER_SIZE(ret, size, len, offset);
 		}
-		if (test_bit(ATTR_TIMESTAMP_STOP, ct->set)) {
+		if (test_bit(ATTR_TIMESTAMP_STOP, ct->head.set)) {
 			ret = __snprintf_timestamp_stop(buf+offset, len, ct);
 			BUFFER_SIZE(ret, size, len, offset);
 		}
 	}
 
-	if (test_bit(ATTR_USE, ct->set)) {
+	if (test_bit(ATTR_USE, ct->head.set)) {
 		ret = __snprintf_use(buf+offset, len, ct);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
 
-	if (flags & NFCT_OF_ID && test_bit(ATTR_ID, ct->set)) {
+	if (flags & NFCT_OF_ID && test_bit(ATTR_ID, ct->head.set)) {
 		ret = __snprintf_id(buf+offset, len, ct);
 		BUFFER_SIZE(ret, size, len, offset);
 	}
