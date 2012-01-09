@@ -1,3 +1,9 @@
+libnetfilter-conntrack (0.9.1-1+vyatta2) unstable; urgency=low
+
+  * updating changelog
+
+ -- Gaurav Sinha <gaurav.sinha@vyatta.com>  Mon, 09 Jan 2012 15:05:15 -0800
+
 libnetfilter-conntrack (0.9.1-1+vyatta1) unstable; urgency=low
 
   * Vyatta Import
