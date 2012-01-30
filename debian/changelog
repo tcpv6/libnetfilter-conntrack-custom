@@ -1,9 +1,12 @@
+libnetfilter-conntrack (1.0.0-1+vyatta8) unstable; urgency=low
+
+  * Updated library with fixes for xml output for expect sync show commands. 
+
+ -- Gaurav Sinha <gaurav.sinha@vyatta.com>  Fri, 20 Jan 2012 12:03:38 -0800
+
 libnetfilter-conntrack (1.0.0-1+vyatta7) unstable; urgency=low
 
-  [ =Gaurav Sinha ]
   * updating changelog to correct the version used to 1.0.0
-
-  [ Gaurav Sinha ]
 
  -- Gaurav Sinha <gaurav.sinha@vyatta.com>  Fri, 20 Jan 2012 12:03:38 -0800
 
