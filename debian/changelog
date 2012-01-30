@@ -1,3 +1,14 @@
+libnetfilter-conntrack (1.0.0-1+vyatta9) unstable; urgency=low
+
+  [ Pablo Neira Ayuso ]
+  * expect: add XML support for nfexp_snprintf()
+
+  [ Gaurav Sinha ]
+  * releasing version of the library with fixes for xml output for
+    expect sync show commands
+
+ -- Gaurav Sinha <gaurav.sinha@vyatta.com>  Mon, 30 Jan 2012 10:49:41 -0800
+
 libnetfilter-conntrack (1.0.0-1+vyatta8) unstable; urgency=low
 
   * Updated library with fixes for xml output for expect sync show commands. 
