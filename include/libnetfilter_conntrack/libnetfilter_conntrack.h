@@ -510,6 +510,10 @@ enum nf_expect_attr {
 	ATTR_EXP_ZONE,		/* u16 bits */
 	ATTR_EXP_FLAGS,		/* u32 bits */
 	ATTR_EXP_HELPER_NAME,	/* string (16 bytes max) */
+	ATTR_EXP_CLASS,		/* u32 bits */
+	ATTR_EXP_NAT_TUPLE,	/* pointer to conntrack object */
+	ATTR_EXP_NAT_DIR,	/* u8 bits */
+	ATTR_EXP_FN,		/* string */
 	ATTR_EXP_MAX
 };
 

@@ -39,9 +39,29 @@ static const void *get_exp_attr_flags(const struct nf_expect *exp)
 	return &exp->flags;
 }
 
+static const void *get_exp_attr_class(const struct nf_expect *exp)
+{
+	return &exp->class;
+}
+
 static const void *get_exp_attr_helper_name(const struct nf_expect *exp)
 {
 	return exp->helper_name;
+}
+
+static const void *get_exp_attr_nat_dir(const struct nf_expect *exp)
+{
+	return &exp->nat_dir;
+}
+
+static const void *get_exp_attr_nat_tuple(const struct nf_expect *exp)
+{
+	return &exp->nat;
+}
+
+static const void *get_exp_attr_expectfn(const struct nf_expect *exp)
+{
+	return exp->expectfn;
 }
 
 const get_exp_attr get_exp_attr_array[ATTR_EXP_MAX] = {
@@ -52,4 +72,8 @@ const get_exp_attr get_exp_attr_array[ATTR_EXP_MAX] = {
 	[ATTR_EXP_ZONE]			= get_exp_attr_zone,
 	[ATTR_EXP_FLAGS]		= get_exp_attr_flags,
 	[ATTR_EXP_HELPER_NAME]		= get_exp_attr_helper_name,
+	[ATTR_EXP_CLASS]		= get_exp_attr_class,
+	[ATTR_EXP_NAT_TUPLE]		= get_exp_attr_nat_tuple,
+	[ATTR_EXP_NAT_DIR]		= get_exp_attr_nat_dir,
+	[ATTR_EXP_FN]			= get_exp_attr_expectfn,
 };
