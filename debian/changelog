@@ -1,3 +1,18 @@
+libnetfilter-conntrack (1.0.0-1+vyatta10) unstable; urgency=low
+
+  [ Pablo Neira Ayuso ]
+  * expect: add class support
+  * expect: add NAT support
+  * expect: add expectfn support
+  * expect: CTA_EXPECT_HELP_NAME must be NULL-terminated
+  * expect: fix comparison of expectation class and flags
+  * expect: fix missing whitespace after expectation flags in
+    nfexp_snprintf
+
+  [ Gaurav Sinha ]
+
+ -- Gaurav Sinha <gaurav.sinha@vyatta.com>  Wed, 08 Feb 2012 11:24:08 -0800
+
 libnetfilter-conntrack (1.0.0-1+vyatta9) unstable; urgency=low
 
   [ Pablo Neira Ayuso ]
