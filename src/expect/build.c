@@ -28,11 +28,25 @@ static void __build_flags(struct nfnlhdr *req,
 	nfnl_addattr32(&req->nlh, size, CTA_EXPECT_FLAGS,htonl(exp->flags));
 }
 
+static void __build_class(struct nfnlhdr *req,
+			  size_t size,
+			  const struct nf_expect *exp)
+{
+	nfnl_addattr32(&req->nlh, size, CTA_EXPECT_CLASS, htonl(exp->class));
+}
+
 static void __build_helper_name(struct nfnlhdr *req, size_t size,
 			 const struct nf_expect *exp)
 {
 	nfnl_addattr_l(&req->nlh, size, CTA_EXPECT_HELP_NAME,
-			exp->helper_name, strlen(exp->helper_name));
+			exp->helper_name, strlen(exp->helper_name)+1);
+}
+
+static void __build_expectfn(struct nfnlhdr *req,
+			     size_t size, const struct nf_expect *exp)
+{
+	nfnl_addattr_l(&req->nlh, size, CTA_EXPECT_FN,
+			exp->expectfn, strlen(exp->expectfn)+1);
 }
 
 int __build_expect(struct nfnl_subsys_handle *ssh,
@@ -67,14 +81,29 @@ int __build_expect(struct nfnl_subsys_handle *ssh,
 		__build_tuple(req, size, &exp->mask.orig, CTA_EXPECT_MASK);
 	}
 
+	if (test_bit(ATTR_EXP_NAT_TUPLE, exp->set) &&
+	    test_bit(ATTR_EXP_NAT_DIR, exp->set)) {
+		struct nfattr *nest;
+
+		nest = nfnl_nest(&req->nlh, size, CTA_EXPECT_NAT);
+		__build_tuple(req, size, &exp->nat.orig, CTA_EXPECT_NAT_TUPLE);
+		nfnl_addattr32(&req->nlh, size, CTA_EXPECT_NAT_DIR,
+				htonl(exp->nat_dir));
+		nfnl_nest_end(&req->nlh, nest);
+	}
+
 	if (test_bit(ATTR_EXP_TIMEOUT, exp->set))
 		__build_timeout(req, size, exp);
 	if (test_bit(ATTR_EXP_FLAGS, exp->set))
 		__build_flags(req, size, exp);
 	if (test_bit(ATTR_EXP_ZONE, exp->set))
 		__build_zone(req, size, exp);
+	if (test_bit(ATTR_EXP_CLASS, exp->set))
+		__build_class(req, size, exp);
 	if (test_bit(ATTR_EXP_HELPER_NAME, exp->set))
 		__build_helper_name(req, size, exp);
+	if (test_bit(ATTR_EXP_FN, exp->set))
+		__build_expectfn(req, size, exp);
 
 	return 0;
 }
