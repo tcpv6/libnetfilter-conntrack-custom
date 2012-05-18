@@ -132,6 +132,7 @@ enum nf_conntrack_attr {
 	ATTR_SECCTX,				/* string */
 	ATTR_TIMESTAMP_START,			/* u64 bits, linux >= 2.6.38 */
 	ATTR_TIMESTAMP_STOP = 64,		/* u64 bits, linux >= 2.6.38 */
+	ATTR_HELPER_INFO,			/* variable length */
 	ATTR_MAX
 };
 
@@ -149,6 +150,10 @@ enum nf_conntrack_attr_grp {
 	ATTR_GRP_MASTER_PORT,			/* struct nfct_attr_grp_port */
 	ATTR_GRP_ORIG_COUNTERS,			/* struct nfct_attr_grp_ctrs */
 	ATTR_GRP_REPL_COUNTERS,			/* struct nfct_attr_grp_ctrs */
+	ATTR_GRP_ORIG_ADDR_SRC = 12,		/* union nfct_attr_grp_addr */
+	ATTR_GRP_ORIG_ADDR_DST,			/* union nfct_attr_grp_addr */
+	ATTR_GRP_REPL_ADDR_SRC,			/* union nfct_attr_grp_addr */
+	ATTR_GRP_REPL_ADDR_DST,			/* union nfct_attr_grp_addr */
 	ATTR_GRP_MAX
 };
 
@@ -172,6 +177,12 @@ struct nfct_attr_grp_icmp {
 struct nfct_attr_grp_ctrs {
 	u_int64_t packets;
 	u_int64_t bytes;
+};
+
+union nfct_attr_grp_addr {
+	u_int32_t ip;
+	u_int32_t ip6[4];
+	u_int32_t addr[4];
 };
 
 /* message type */
@@ -263,6 +274,11 @@ enum {
 };
 
 /* setter */
+extern void nfct_set_attr_l(struct nf_conntrack *ct,
+			    const enum nf_conntrack_attr type,
+			    const void *value,
+			    size_t len);
+
 extern void nfct_set_attr(struct nf_conntrack *ct,
 			  const enum nf_conntrack_attr type,
 			  const void *value);
@@ -392,6 +408,8 @@ enum nf_conntrack_query {
 	NFCT_Q_DUMP,
 	NFCT_Q_DUMP_RESET,
 	NFCT_Q_CREATE_UPDATE,
+	NFCT_Q_DUMP_FILTER,
+	NFCT_Q_DUMP_FILTER_RESET,
 };
 
 extern int nfct_query(struct nfct_handle *h,
@@ -421,7 +439,7 @@ extern void nfct_copy_attr(struct nf_conntrack *ct1,
 			   const struct nf_conntrack *ct2,
 			   const enum nf_conntrack_attr type);
 
-/* filter */
+/* event filtering */
 
 struct nfct_filter;
 
@@ -472,6 +490,33 @@ extern int nfct_filter_set_logic(struct nfct_filter *filter,
 extern int nfct_filter_attach(int fd, struct nfct_filter *filter);
 extern int nfct_filter_detach(int fd);
 
+/* dump filtering */
+
+struct nfct_filter_dump;
+
+struct nfct_filter_dump_mark {
+	u_int32_t val;
+	u_int32_t mask;
+};
+
+enum nfct_filter_dump_attr {
+	NFCT_FILTER_DUMP_MARK = 0,	/* struct nfct_filter_dump_mark */
+	NFCT_FILTER_DUMP_L3NUM,		/* u_int8_t */
+	NFCT_FILTER_DUMP_MAX
+};
+
+struct nfct_filter_dump *nfct_filter_dump_create(void);
+
+void nfct_filter_dump_destroy(struct nfct_filter_dump *filter);
+
+void nfct_filter_dump_set_attr(struct nfct_filter_dump *filter_dump,
+			       const enum nfct_filter_dump_attr type,
+			       const void *data);
+
+void nfct_filter_dump_set_attr_u8(struct nfct_filter_dump *filter_dump,
+				  const enum nfct_filter_dump_attr type,
+				  u_int8_t data);
+
 /* low level API: netlink functions */
 
 extern __attribute__((deprecated)) int
@@ -493,6 +538,12 @@ int nfct_build_query(struct nfnl_subsys_handle *ssh,
 			    const void *data,
 			    void *req,
 			    unsigned int size);
+
+/* New low level API: netlink functions */
+
+extern int nfct_nlmsg_build(struct nlmsghdr *nlh, const struct nf_conntrack *ct);
+extern int nfct_nlmsg_parse(const struct nlmsghdr *nlh, struct nf_conntrack *ct);
+extern int nfct_payload_parse(const void *payload, size_t payload_len, uint16_t l3num, struct nf_conntrack *ct);
 
 /*
  * NEW expectation API
@@ -634,6 +685,11 @@ int nfexp_build_query(struct nfnl_subsys_handle *ssh,
 			     const void *data,
 			     void *buffer,
 			     unsigned int size);
+
+/* New low level API: netlink functions */
+
+extern int nfexp_nlmsg_build(struct nlmsghdr *nlh, const struct nf_expect *exp);
+extern int nfexp_nlmsg_parse(const struct nlmsghdr *nlh, struct nf_expect *exp);
 
 /* Bitset representing status of connection. Taken from ip_conntrack.h
  * 

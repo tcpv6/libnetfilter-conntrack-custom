@@ -186,6 +186,9 @@ struct nf_conntrack {
 		u_int64_t	start;
 		u_int64_t	stop;
 	} timestamp;
+
+	void *helper_info;
+	size_t helper_info_len;
 };
 
 /*
@@ -258,6 +261,16 @@ struct nfct_filter {
 	} l3proto_ipv6[2][__FILTER_IPV6_MAX];
 
 	u_int32_t 		set[1];
+};
+
+/*
+ * conntrack filter dump object
+ */
+
+struct nfct_filter_dump {
+	struct nfct_filter_dump_mark	mark;
+	u_int8_t			l3num;
+	u_int32_t			set;
 };
 
 /*

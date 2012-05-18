@@ -93,6 +93,8 @@ void nfct_destroy(struct nf_conntrack *ct)
 	assert(ct != NULL);
 	if (ct->secctx)
 		free(ct->secctx);
+	if (ct->helper_info)
+		free(ct->helper_info);
 	free(ct);
 	ct = NULL; /* bugtrap */
 }
@@ -352,6 +354,29 @@ void nfct_callback_unregister2(struct nfct_handle *h)
  */
 
 /**
+ * nfct_set_attr_l - set the value of a certain conntrack attribute
+ * \param ct pointer to a valid conntrack
+ * \param type attribute type
+ * \param pointer to attribute value
+ * \param length of attribute value (in bytes)
+ */
+void
+nfct_set_attr_l(struct nf_conntrack *ct, const enum nf_conntrack_attr type,
+		const void *value, size_t len)
+{
+	assert(ct != NULL);
+	assert(value != NULL);
+
+	if (unlikely(type >= ATTR_MAX))
+		return;
+
+	if (set_attr_array[type]) {
+		set_attr_array[type](ct, value, len);
+		set_bit(type, ct->head.set);
+	}
+}
+
+/**
  * nfct_set_attr - set the value of a certain conntrack attribute
  * \param ct pointer to a valid conntrack
  * \param type attribute type
@@ -369,16 +394,7 @@ void nfct_set_attr(struct nf_conntrack *ct,
 		   const enum nf_conntrack_attr type, 
 		   const void *value)
 {
-	assert(ct != NULL);
-	assert(value != NULL);
-
-	if (unlikely(type >= ATTR_MAX))
-		return;
-
-	if (set_attr_array[type]) {
-		set_attr_array[type](ct, value);
-		set_bit(type, ct->head.set);
-	}
+	nfct_set_attr_l(ct, type, value, 0);
 }
 
 /**
@@ -391,7 +407,7 @@ void nfct_set_attr_u8(struct nf_conntrack *ct,
 		      const enum nf_conntrack_attr type, 
 		      u_int8_t value)
 {
-	nfct_set_attr(ct, type, &value);
+	nfct_set_attr_l(ct, type, &value, sizeof(u_int8_t));
 }
 
 /**
@@ -404,7 +420,7 @@ void nfct_set_attr_u16(struct nf_conntrack *ct,
 		       const enum nf_conntrack_attr type, 
 		       u_int16_t value)
 {
-	nfct_set_attr(ct, type, &value);
+	nfct_set_attr_l(ct, type, &value, sizeof(u_int16_t));
 }
 
 /**
@@ -417,7 +433,7 @@ void nfct_set_attr_u32(struct nf_conntrack *ct,
 		       const enum nf_conntrack_attr type, 
 		       u_int32_t value)
 {
-	nfct_set_attr(ct, type, &value);
+	nfct_set_attr_l(ct, type, &value, sizeof(u_int32_t));
 }
 
 /**
@@ -430,7 +446,7 @@ void nfct_set_attr_u64(struct nf_conntrack *ct,
 		       const enum nf_conntrack_attr type, 
 		       u_int64_t value)
 {
-	nfct_set_attr(ct, type, &value);
+	nfct_set_attr_l(ct, type, &value, sizeof(u_int64_t));
 }
 
 /**
@@ -601,8 +617,8 @@ int nfct_attr_unset(struct nf_conntrack *ct,
  * \param type attribute group (see ATTR_GRP_*)
  * \param data pointer to struct (see struct nfct_attr_grp_*)
  *
- * Note that calling this function for ATTR_GRP_COUNTER_* does nothing since 
- * counters are unsettable.
+ * Note that calling this function for ATTR_GRP_COUNTER_* and ATTR_GRP_ADDR_*
+ * have no effect.
  */
 void nfct_set_attr_grp(struct nf_conntrack *ct,
 		       const enum nf_conntrack_attr_grp type,
@@ -615,7 +631,8 @@ void nfct_set_attr_grp(struct nf_conntrack *ct,
 
 	if (set_attr_grp_array[type]) {
 		set_attr_grp_array[type](ct, data);
-		set_bitmask_u32(ct->head.set, attr_grp_bitmask[type], __NFCT_BITSET);
+		set_bitmask_u32(ct->head.set,
+				attr_grp_bitmask[type].bitmask, __NFCT_BITSET);
 	}
 }
 
@@ -638,9 +655,23 @@ int nfct_get_attr_grp(const struct nf_conntrack *ct,
 		errno = EINVAL;
 		return -1;
 	}
-	if (!test_bitmask_u32(ct->head.set, attr_grp_bitmask[type], __NFCT_BITSET)) {
-		errno = ENODATA;
-		return -1;
+	switch(attr_grp_bitmask[type].type) {
+	case NFCT_BITMASK_AND:
+		if (!test_bitmask_u32(ct->head.set,
+				      attr_grp_bitmask[type].bitmask,
+				      __NFCT_BITSET)) {
+			errno = ENODATA;
+			return -1;
+		}
+		break;
+	case NFCT_BITMASK_OR:
+		if (!test_bitmask_u32_or(ct->head.set,
+					 attr_grp_bitmask[type].bitmask,
+					 __NFCT_BITSET)) {
+			errno = ENODATA;
+			return -1;
+		}
+		break;
 	}
 	assert(get_attr_grp_array[type]);
 	get_attr_grp_array[type](ct, data);
@@ -663,7 +694,23 @@ int nfct_attr_grp_is_set(const struct nf_conntrack *ct,
 		errno = EINVAL;
 		return -1;
 	}
-	return test_bitmask_u32(ct->head.set, attr_grp_bitmask[type], __NFCT_BITSET);
+	switch(attr_grp_bitmask[type].type) {
+	case NFCT_BITMASK_AND:
+		if (test_bitmask_u32(ct->head.set,
+				     attr_grp_bitmask[type].bitmask,
+				     __NFCT_BITSET)) {
+			return 1;
+		}
+		break;
+	case NFCT_BITMASK_OR:
+		if (test_bitmask_u32_or(ct->head.set,
+					attr_grp_bitmask[type].bitmask,
+					__NFCT_BITSET)) {
+			return 1;
+		}
+		break;
+	}
+	return 0;
 }
 
 /**
@@ -683,7 +730,8 @@ int nfct_attr_grp_unset(struct nf_conntrack *ct,
 		errno = EINVAL;
 		return -1;
 	}
-	unset_bitmask_u32(ct->head.set, attr_grp_bitmask[type], __NFCT_BITSET);
+	unset_bitmask_u32(ct->head.set, attr_grp_bitmask[type].bitmask,
+			  __NFCT_BITSET);
 
 	return 0;
 }
@@ -766,7 +814,14 @@ __build_query_ct(struct nfnl_subsys_handle *ssh,
 	case NFCT_Q_CREATE_UPDATE:
 		__build_conntrack(ssh, req, size, IPCTNL_MSG_CT_NEW, NLM_F_REQUEST|NLM_F_CREATE|NLM_F_ACK, data);
 		break;
-
+	case NFCT_Q_DUMP_FILTER:
+		nfnl_fill_hdr(ssh, &req->nlh, 0, AF_UNSPEC, 0, IPCTNL_MSG_CT_GET, NLM_F_REQUEST|NLM_F_DUMP);
+		__build_filter_dump(req, size, data);
+		break;
+	case NFCT_Q_DUMP_FILTER_RESET:
+		nfnl_fill_hdr(ssh, &req->nlh, 0, AF_UNSPEC, 0, IPCTNL_MSG_CT_GET_CTRZERO, NLM_F_REQUEST|NLM_F_DUMP);
+		__build_filter_dump(req, size, data);
+		break;
 	default:
 		errno = ENOTSUP;
 		return -1;
@@ -802,6 +857,8 @@ __build_query_ct(struct nfnl_subsys_handle *ssh,
  * 	- NFCT_Q_FLUSH: flush the conntrack table
  * 	- NFCT_Q_DUMP: dump the conntrack table
  * 	- NFCT_Q_DUMP_RESET: dump the conntrack table and reset counters
+ * 	- NFCT_Q_DUMP_FILTER: dump the conntrack table
+ * 	- NFCT_Q_DUMP_FILTER_RESET: dump the conntrack table and reset counters
  *
  * Pass a valid pointer to the protocol family (u_int32_t)
  *
@@ -1351,6 +1408,75 @@ int nfct_filter_detach(int fd)
 	int val = 0;
 
 	return setsockopt(fd, SOL_SOCKET, SO_DETACH_FILTER, &val, sizeof(val));
+}
+
+/**
+ * @}
+ */
+
+/**
+ * \defgroup dumpfilter Kernel-space filtering for dumping
+ *
+ * @{
+ */
+
+/**
+ * nfct_filter_dump_create - create a dump filter
+ *
+ * This function returns a valid pointer on success, otherwise NULL is
+ * returned and errno is appropriately set.
+ */
+struct nfct_filter_dump *nfct_filter_dump_create(void)
+{
+	return calloc(sizeof(struct nfct_filter_dump), 1);
+}
+
+/**
+ * nfct_filter_dump_destroy - destroy a dump filter
+ * \param filter filter that we want to destroy
+ *
+ * This function releases the memory that is used by the filter object.
+ */
+void nfct_filter_dump_destroy(struct nfct_filter_dump *filter)
+{
+	assert(filter != NULL);
+	free(filter);
+	filter = NULL;
+}
+
+/**
+ * nfct_filter_dump_attr_set - set filter attribute
+ * \param filter dump filter object that we want to modify
+ * \param type filter attribute type
+ * \param value pointer to the value of the filter attribute
+ */
+void nfct_filter_dump_set_attr(struct nfct_filter_dump *filter_dump,
+			       const enum nfct_filter_dump_attr type,
+			       const void *value)
+{
+	assert(filter_dump != NULL);
+	assert(value != NULL);
+
+	if (unlikely(type >= NFCT_FILTER_DUMP_MAX))
+		return;
+
+	if (set_filter_dump_attr_array[type]) {
+		set_filter_dump_attr_array[type](filter_dump, value);
+		filter_dump->set |= (1 << type);
+	}
+}
+
+/**
+ * nfct_filter_dump_attr_set_u8 - set u8 dump filter attribute
+ * \param filter dump filter object that we want to modify
+ * \param type filter attribute type
+ * \param value value of the filter attribute using unsigned int (32 bits).
+ */
+void nfct_filter_dump_set_attr_u8(struct nfct_filter_dump *filter_dump,
+				  const enum nfct_filter_dump_attr type,
+				  u_int8_t value)
+{
+	nfct_filter_dump_set_attr(filter_dump, type, &value);
 }
 
 /**

@@ -155,4 +155,8 @@ const set_attr_grp set_attr_grp_array[ATTR_GRP_MAX] = {
 	[ATTR_GRP_MASTER_PORT]		= set_attr_grp_master_port,
 	[ATTR_GRP_ORIG_COUNTERS]	= set_attr_grp_do_nothing,
 	[ATTR_GRP_REPL_COUNTERS]	= set_attr_grp_do_nothing,
+	[ATTR_GRP_ORIG_ADDR_SRC]	= set_attr_grp_do_nothing,
+	[ATTR_GRP_ORIG_ADDR_DST]	= set_attr_grp_do_nothing,
+	[ATTR_GRP_REPL_ADDR_SRC]	= set_attr_grp_do_nothing,
+	[ATTR_GRP_REPL_ADDR_DST]	= set_attr_grp_do_nothing,
 };

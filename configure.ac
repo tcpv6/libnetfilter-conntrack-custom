@@ -24,6 +24,7 @@ esac
 
 dnl Dependencies
 PKG_CHECK_MODULES([LIBNFNETLINK], [libnfnetlink >= 1.0.0])
+PKG_CHECK_MODULES([LIBMNL], [libmnl >= 1.0.3])
 
 AC_CHECK_HEADERS(arpa/inet.h)
 dnl Check for inet_ntop
@@ -66,7 +67,7 @@ fi
 
 dnl Output the makefile
 AC_CONFIG_FILES([Makefile src/Makefile include/Makefile utils/Makefile
-	qa/Makefile include/libnetfilter_conntrack/Makefile
+	examples/Makefile qa/Makefile include/libnetfilter_conntrack/Makefile
 	include/internal/Makefile src/conntrack/Makefile src/expect/Makefile
 	libnetfilter_conntrack.pc doxygen.cfg])
 AC_OUTPUT
