@@ -1,3 +1,24 @@
+libnetfilter-conntrack (1.0.0-1+vyatta12) unstable; urgency=low
+
+  [ Pablo Neira Ayuso ]
+  * conntrack: add support for CTA_MARK_MASK and filtered dumping
+  * qa: add some stress tools to test conntrack via ctnetlink
+  * qa: several improvements for the ct_stress tools
+  * conntrack: fix wrong building of ICMP reply tuple
+  * conntrack: add new ATTR_GRP_[ORIG|REPL]_ADDR_[SRC|DST] attribute
+  * conntrack: fix new ATTR_GRP_[ORIG|REPL]_ADDR_[SRC|DST]
+  * qa: add test case for get/set ATTR_GRP_* API
+  * conntrack: add new API to build/parse ctnetlink messages using
+    libmnl
+  * examples: add example using libmnl and the new low-level API
+  * expect: add new API to build/parse ctnetlink messages using libmnl
+  * example: add example using libmnl and the new low-level API
+  * conntrack: add ATTR_HELPER_INFO
+
+  [ Gaurav Sinha ]
+
+ -- Gaurav Sinha <gaurav.sinha@vyatta.com>  Wed, 23 May 2012 00:36:49 -0700
+
 libnetfilter-conntrack (1.0.0-1+vyatta11) unstable; urgency=low
 
   * new branch
