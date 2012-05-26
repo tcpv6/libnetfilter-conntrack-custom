@@ -394,6 +394,7 @@ void nfct_set_attr(struct nf_conntrack *ct,
 		   const enum nf_conntrack_attr type, 
 		   const void *value)
 {
+	/* We assume the setter knows the size of the passed pointer. */
 	nfct_set_attr_l(ct, type, value, 0);
 }
 

@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to create configure.
 
-AC_INIT([libnetfilter_conntrack], [1.0.0])
+AC_INIT([libnetfilter_conntrack], [1.0.1])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CANONICAL_HOST
 AC_CONFIG_MACRO_DIR([m4])
@@ -58,11 +58,6 @@ int main()
   ]])],[ AC_MSG_RESULT(yes)
        AC_DEFINE_UNQUOTED(HAVE_INET_NTOP_IPV6, 1, [Define to 1 if inet_ntop supports IPv6.])
      ],[AC_MSG_RESULT(no)],[AC_MSG_RESULT(no)])
-fi
-
-if test ! -z "$libdir"; then
-	MODULE_DIR="\\\"$libdir/libnetfilter_conntrack/\\\""
-	CFLAGS="$CFLAGS -DLIBNETFILTER_CONNTRACK_DIR=$MODULE_DIR"
 fi
 
 dnl Output the makefile
