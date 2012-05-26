@@ -1,3 +1,34 @@
+libnetfilter-conntrack (1.0.0-1+vyatta14) unstable; urgency=low
+
+  [ Kelvie Wong ]
+  * expect: support NFCT_Q_CREATE_UPDATE in nfexp_query
+
+  [ Pablo Neira Ayuso ]
+  * build: bump version to 1.0.1
+
+  [ Jan Engelhardt ]
+  * build: remove unused LDFLAGS
+  * qa: change an if to elseif
+  * build: remove unused -DLIBNETFILTER_CONNTRACK_DIR
+  * Update .gitignore
+
+  [ Florian Westphal ]
+  * snprintf: print conntrack helper name, too
+
+  [ Pablo Neira Ayuso ]
+  * conntrack: add new API to build/parse ctnetlink messages using
+    libmnl
+  * expect: add new API to build/parse ctnetlink messages using libmnl
+  * examples: add example using libmnl and the new low-level API
+    (conntrack)
+  * examples: add example using libmnl and the new low-level API
+    (expectation)
+  * conntrack: add nfct_set_attr_l and ATTR_HELPER_INFO
+
+  [ Gaurav Sinha ]
+
+ -- Gaurav Sinha <gaurav.sinha@vyatta.com>  Sat, 26 May 2012 12:48:02 -0700
+
 libnetfilter-conntrack (1.0.0-1+vyatta13) unstable; urgency=low
 
   * force release
