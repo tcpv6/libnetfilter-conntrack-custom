@@ -299,6 +299,11 @@ extern void nfct_set_attr_u64(struct nf_conntrack *ct,
 			      const enum nf_conntrack_attr type,
 			      u_int64_t value);
 
+extern void nfct_set_attr_l(struct nf_conntrack *ct,
+			    const enum nf_conntrack_attr type,
+			    const void *value,
+			    size_t len);
+
 /* getter */
 extern const void *nfct_get_attr(const struct nf_conntrack *ct,
 				 const enum nf_conntrack_attr type);
