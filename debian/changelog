@@ -1,3 +1,9 @@
+libnetfilter-conntrack (1.0.0-1+vyatta15) unstable; urgency=low
+
+  * Fix nat issue with len of function name > 16
+
+ -- Gaurav Sinha <gaurav.sinha@vyatta.com>  Wed, 12 Sep 2012 14:03:27 -0700
+
 libnetfilter-conntrack (1.0.0-1+vyatta14) unstable; urgency=low
 
   [ Kelvie Wong ]
