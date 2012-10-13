@@ -4,3 +4,4 @@ Tue Jan 17 11:52:42 PST 2012: [fixing autobuild problem with libnetfilter-conntr
 Sat Mar  3 02:24:38 PST 2012: [new branch] at [debian/1.0.0-1+vyatta10]
 Wed May 23 13:21:51 PDT 2012: [force release] at [debian/1.0.0-1+vyatta12]
 Fri Oct 12 19:45:14 PDT 2012: [new branch] at [debian/1.0.0-1+vyatta15]
+Sat Oct 13 13:29:35 PDT 2012: [create daisy branch] at [debian/1.0.0-1+vyatta16]
