@@ -1,3 +1,9 @@
+libnetfilter-conntrack (1.0.0-1+vyatta16) unstable; urgency=low
+
+  * new branch
+
+ -- John Southworth <john.southworth@vyatta.com>  Fri, 12 Oct 2012 19:45:15 -0700
+
 libnetfilter-conntrack (1.0.0-1+vyatta15) unstable; urgency=low
 
   * Fix nat issue with len of function name > 16
