@@ -1,3 +1,9 @@
+libnetfilter-conntrack (1.0.0-1+vyatta16+daisy2) unstable; urgency=low
+
+  * patch to allow tracking dying and unconfirmed lists in conntrack
+
+ -- Gaurav Sinha <gaurav.sinha@vyatta.com>  Thu, 13 Dec 2012 11:41:24 -0800
+
 libnetfilter-conntrack (1.0.0-1+vyatta16+daisy1) unstable; urgency=low
 
   * create daisy branch
