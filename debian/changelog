@@ -1,3 +1,10 @@
+libnetfilter-conntrack (1.0.0-1+vyos1+helium1) unstable; urgency=low
+
+  * Add missing build dependencies.
+  * New branch.
+
+ -- Daniil Baturin <daniil@baturin.org>  Sat, 15 Feb 2014 15:00:36 +0100
+
 libnetfilter-conntrack (1.0.0-1+vyatta16+hydrogen1) unstable; urgency=low
 
   * New branch
