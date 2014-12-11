@@ -1,3 +1,9 @@
+libnetfilter-conntrack (1.0.0-1+vyos2+lithium1) unstable; urgency=low
+
+  * New branch
+
+ -- Alex Harpin <development@landsofshadow.co.uk>  Thu, 11 Dec 2014 17:38:42 +0000
+ 
 libnetfilter-conntrack (1.0.0-1+vyos1+helium1) unstable; urgency=low
 
   * Add missing build dependencies.
