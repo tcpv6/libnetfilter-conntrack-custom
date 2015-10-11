@@ -1,3 +1,10 @@
+libnetfilter-conntrack (1.0.1-1+vyos2+lithium4) unstable; urgency=low
+
+  [ Alex Harpin ]
+  * Set package version to actual version (currently 1.0.1)
+
+ -- Alex Harpin <development@landsofshadow.co.uk>  Sun, 11 Oct 2015 15:00:04 +0100
+
 libnetfilter-conntrack (1.0.0-1+vyos2+lithium3) unstable; urgency=low
 
   * libnetfilter-conntrack: add dh_gencontrol to enable development builds
