@@ -1,3 +1,10 @@
+libnetfilter-conntrack (1.0.4-1+vyos2+lithium7) unstable; urgency=low
+
+  [ Alex Harpin ]
+  * Update to upstream version 1.0.4
+
+ -- Alex Harpin <development@landsofshadow.co.uk>  Sat, 24 Oct 2015 10:40:01 +0100
+ 
 libnetfilter-conntrack (1.0.3-1+vyos2+lithium6) unstable; urgency=low
 
   [ Alex Harpin ]
